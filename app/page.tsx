@@ -29,7 +29,7 @@ export default function Home() {
   const [revealedCards, setRevealedCards] = useState<number[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  
+
   const [albumOficial, setAlbumOficial] = useState<Jogador[]>([]);
   const selecoesDisponiveis = useMemo(() => {
     return Array.from(new Set(albumOficial.map(j => j.selecao))).sort((a, b) => a.localeCompare(b));
@@ -123,13 +123,13 @@ export default function Home() {
   const exibirTrocas = selecaoAtiva === "Minhas Trocas";
   const albumDaSelecao = useMemo(() => {
     const list = exibirTrocas ? figurinhasRepetidas : albumOficial.filter(j => j.selecao === selecaoAtiva);
-    
+
     // Peso para exibir a "escalação" da forma como a maioria dos álbuns faz (do goleiro ao ataque)
     const ordemPosicao: Record<string, number> = {
       "GOL": 1,
       "ZAG": 2, "DEF": 2,
       "LAT": 3, "LD": 3, "LE": 3,
-      "VOL": 4, 
+      "VOL": 4,
       "MEI": 5, "MC": 5,
       "ATA": 6, "PE": 6, "PD": 6, "CA": 6
     };
@@ -188,7 +188,7 @@ export default function Home() {
       .from("inventario")
       .select("*")
       .eq("user_id", uid);
-    
+
     if (data) {
       const dbFigurinhas = data.map((item: any) => ({
         ...item,
@@ -224,6 +224,7 @@ export default function Home() {
     }
     fetchFigurinhas(user.id);
     checkPacoteDiario(user.id);
+
   }, [user]);
 
   const aceitarTroca = async () => {
@@ -335,11 +336,11 @@ export default function Home() {
       // 0 a 70 (70%): Comum
       if (gachaRoll <= 70) {
         targetPool = comuns.length > 0 ? comuns : albumOficial;
-      } 
+      }
       // 70.01 a 90 (20%): Raro
       else if (gachaRoll <= 90) {
         targetPool = raros.length > 0 ? raros : (comuns.length > 0 ? comuns : albumOficial);
-      } 
+      }
       // 90.01 a 100 (10%): Lendário/Épico
       else {
         targetPool = epicos.length > 0 ? epicos : (raros.length > 0 ? raros : (comuns.length > 0 ? comuns : albumOficial));
@@ -364,17 +365,17 @@ export default function Home() {
         selecao: jogador.selecao,
         raridade: jogador.raridade
       }));
-      
+
       const { error } = await supabase.from("inventario").insert(records);
       if (error) {
         console.error("Erro do Supabase:", error.message, error.details, error.hint);
       } else {
         setMinhasFigurinhas(prev => [...prev, ...sorteados]);
-        
+
         // Registra o pacote de hoje
         await supabase.from("pacotes_abertos").insert({ user_id: user.id });
         setJaAbriuHoje(true);
-        
+
         setPacoteAberto(sorteados);
         setIsModalOpen(true);
       }
@@ -400,7 +401,7 @@ export default function Home() {
               Álbum da Copa
             </h1>
             <p className="text-gray-500 dark:text-gray-400">
-              {tradeInvite 
+              {tradeInvite
                 ? "Você recebeu um convite de troca! Faça login com o Google para resgatá-lo."
                 : "Colecione, troque e complete seu álbum digital."}
             </p>
@@ -452,18 +453,17 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="flex-1 max-w-5xl mx-auto w-full p-4 sm:p-6 lg:p-8">
-        
+
         {/* Status do Colecionador (Progresso Global) */}
         {albumOficial.length > 0 && (
           <div className="mb-8 p-5 sm:p-6 bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800 transition-all hover:shadow-md">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-3 gap-2">
-              <h3 className={`font-black tracking-tight text-lg sm:text-xl ${
-                new Set(minhasFigurinhas.map(f => f.jogador_id || f.id)).size === albumOficial.length 
-                  ? "text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-yellow-700 dark:from-yellow-400 dark:to-yellow-600" 
+              <h3 className={`font-black tracking-tight text-lg sm:text-xl ${new Set(minhasFigurinhas.map(f => f.jogador_id || f.id)).size === albumOficial.length
+                  ? "text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-yellow-700 dark:from-yellow-400 dark:to-yellow-600"
                   : "text-zinc-800 dark:text-zinc-100"
-              }`}>
-                {new Set(minhasFigurinhas.map(f => f.jogador_id || f.id)).size === albumOficial.length 
-                  ? "ÁLBUM COMPLETO! 🏆" 
+                }`}>
+                {new Set(minhasFigurinhas.map(f => f.jogador_id || f.id)).size === albumOficial.length
+                  ? "ÁLBUM COMPLETO! 🏆"
                   : `Você completou ${((new Set(minhasFigurinhas.map(f => f.jogador_id || f.id)).size / albumOficial.length) * 100).toFixed(1)}% do seu álbum!`}
               </h3>
               <span className="text-xs sm:text-sm font-bold text-zinc-500 dark:text-zinc-400">
@@ -471,12 +471,11 @@ export default function Home() {
               </span>
             </div>
             <div className="w-full bg-zinc-100 dark:bg-zinc-800 rounded-full h-4 overflow-hidden border border-zinc-200 dark:border-zinc-700">
-              <div 
-                className={`h-full rounded-full transition-all duration-1000 ease-out ${
-                  new Set(minhasFigurinhas.map(f => f.jogador_id || f.id)).size === albumOficial.length 
-                    ? "bg-gradient-to-r from-yellow-300 via-yellow-500 to-yellow-600 shadow-[0_0_15px_rgba(234,179,8,0.6)]" 
+              <div
+                className={`h-full rounded-full transition-all duration-1000 ease-out ${new Set(minhasFigurinhas.map(f => f.jogador_id || f.id)).size === albumOficial.length
+                    ? "bg-gradient-to-r from-yellow-300 via-yellow-500 to-yellow-600 shadow-[0_0_15px_rgba(234,179,8,0.6)]"
                     : "bg-gradient-to-r from-yellow-400 to-green-500"
-                }`}
+                  }`}
                 style={{ width: `${Math.min(((new Set(minhasFigurinhas.map(f => f.jogador_id || f.id)).size / albumOficial.length) * 100), 100)}%` }}
               />
             </div>
@@ -488,15 +487,14 @@ export default function Home() {
               O Álbum Oficial
             </h2>
           </div>
-          
+
           <button
             onClick={abrirPacoteDiario}
             disabled={jaAbriuHoje || isShaking}
-            className={`flex-shrink-0 font-black px-6 py-3 rounded-xl shadow-lg transform transition-all flex items-center justify-center gap-2 ${
-              jaAbriuHoje 
-                ? "bg-zinc-300 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-600 cursor-not-allowed" 
+            className={`flex-shrink-0 font-black px-6 py-3 rounded-xl shadow-lg transform transition-all flex items-center justify-center gap-2 ${jaAbriuHoje
+                ? "bg-zinc-300 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-600 cursor-not-allowed"
                 : "bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-yellow-950 hover:scale-[1.02] active:scale-95"
-            } ${isShaking ? "animate-shake" : ""}`}
+              } ${isShaking ? "animate-shake" : ""}`}
           >
             <svg className={`w-6 h-6 ${isShaking ? "animate-spin" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" /></svg>
             {jaAbriuHoje ? "Volte Amanhã! ⏳" : (isShaking ? "CORTANDO..." : "Abrir Pacote Diário")}
@@ -524,9 +522,9 @@ export default function Home() {
                 {selecaoAtiva === "Minhas Trocas"
                   ? figurinhasRepetidas.length
                   : (() => {
-                      const total = albumOficial.filter(j => j.selecao === selecaoAtiva).length;
-                      return `${getContadorSelecao(selecaoAtiva)}/${total}`;
-                    })()}
+                    const total = albumOficial.filter(j => j.selecao === selecaoAtiva).length;
+                    return `${getContadorSelecao(selecaoAtiva)}/${total}`;
+                  })()}
               </span>
             </div>
             {/* Seta animada */}
@@ -566,16 +564,14 @@ export default function Home() {
                   {("minhas trocas".includes(searchTerm.toLowerCase()) || searchTerm === "") && (
                     <button
                       onClick={() => { setSelecaoAtiva("Minhas Trocas"); setIsDropdownOpen(false); setSearchTerm(""); }}
-                      className={`w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors ${
-                        selecaoAtiva === "Minhas Trocas"
+                      className={`w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors ${selecaoAtiva === "Minhas Trocas"
                           ? "bg-zinc-800 text-white dark:bg-zinc-100 dark:text-zinc-900"
                           : "hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300"
-                      }`}
+                        }`}
                     >
                       <span className="font-bold">🔄 Minhas Trocas</span>
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${
-                        selecaoAtiva === "Minhas Trocas" ? "bg-white/20 dark:bg-black/10" : "bg-zinc-100 dark:bg-zinc-700 text-zinc-500 dark:text-zinc-400"
-                      }`}>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${selecaoAtiva === "Minhas Trocas" ? "bg-white/20 dark:bg-black/10" : "bg-zinc-100 dark:bg-zinc-700 text-zinc-500 dark:text-zinc-400"
+                        }`}>
                         {figurinhasRepetidas.length}
                       </span>
                     </button>
@@ -597,11 +593,10 @@ export default function Home() {
                         <button
                           key={selecao}
                           onClick={() => { setSelecaoAtiva(selecao); setIsDropdownOpen(false); setSearchTerm(""); }}
-                          className={`w-full flex items-center justify-between px-4 py-2.5 text-sm gap-3 transition-colors ${
-                            isAtivo
+                          className={`w-full flex items-center justify-between px-4 py-2.5 text-sm gap-3 transition-colors ${isAtivo
                               ? "bg-zinc-800 text-white dark:bg-zinc-100 dark:text-zinc-900"
                               : "hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300"
-                          }`}
+                            }`}
                         >
                           <div className="flex items-center gap-2 min-w-0">
                             <img
@@ -611,9 +606,8 @@ export default function Home() {
                             />
                             <span className="font-semibold truncate">{selecao}</span>
                           </div>
-                          <span className={`flex-shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-md ${
-                            isAtivo ? "bg-white/20 dark:bg-black/10" : "bg-zinc-100 dark:bg-zinc-700 text-zinc-500 dark:text-zinc-400"
-                          }`}>
+                          <span className={`flex-shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-md ${isAtivo ? "bg-white/20 dark:bg-black/10" : "bg-zinc-100 dark:bg-zinc-700 text-zinc-500 dark:text-zinc-400"
+                            }`}>
                             {progresso}/{total}
                           </span>
                         </button>
@@ -640,14 +634,14 @@ export default function Home() {
               const borderClass = figurinha.raridade === "Épica"
                 ? "border-yellow-400 shadow-[0_0_20px_rgba(255,215,0,0.8)] bg-gradient-to-tr from-yellow-600 via-yellow-400 to-yellow-600"
                 : figurinha.raridade === "Rara"
-                ? "border-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.6)] bg-gradient-to-br from-blue-300 to-blue-500"
-                : "border-zinc-300 bg-gradient-to-br from-zinc-50 to-zinc-200 dark:from-zinc-800 dark:to-zinc-900 border";
-              
+                  ? "border-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.6)] bg-gradient-to-br from-blue-300 to-blue-500"
+                  : "border-zinc-300 bg-gradient-to-br from-zinc-50 to-zinc-200 dark:from-zinc-800 dark:to-zinc-900 border";
+
               const textRarityClass = figurinha.raridade === "Épica"
                 ? "text-yellow-900 dark:text-yellow-900 shadow-sm"
                 : figurinha.raridade === "Rara"
-                ? "text-blue-900 dark:text-blue-900 shadow-sm"
-                : "text-zinc-600 dark:text-zinc-400";
+                  ? "text-blue-900 dark:text-blue-900 shadow-sm"
+                  : "text-zinc-600 dark:text-zinc-400";
 
               return (
                 <div
@@ -655,13 +649,13 @@ export default function Home() {
                   className={`aspect-[2/3] relative rounded-xl border-4 shadow-md overflow-hidden transition-transform duration-300 hover:scale-105 hover:-translate-y-2 ${borderClass}`}
                 >
                   {/* Fundo Unificado */}
-                  <img 
-                    src={(jogadorOriginal as any).fotoUrl || getFallbackImage((jogadorOriginal as any).nome)} 
+                  <img
+                    src={(jogadorOriginal as any).fotoUrl || getFallbackImage((jogadorOriginal as any).nome)}
                     onError={(e) => { e.currentTarget.src = getFallbackImage((jogadorOriginal as any).nome); e.currentTarget.onerror = null; }}
-                    alt={figurinha.nome} 
-                    className="absolute inset-0 object-cover w-full h-full z-0 bg-zinc-200 dark:bg-zinc-800" 
+                    alt={figurinha.nome}
+                    className="absolute inset-0 object-cover w-full h-full z-0 bg-zinc-200 dark:bg-zinc-800"
                   />
-                  
+
                   {/* Overlay Escuro para o Texto */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/10 to-transparent z-0"></div>
 
@@ -672,7 +666,7 @@ export default function Home() {
 
                   {/* Badge: Bandeira */}
                   <img src={`https://flagcdn.com/w40/${jogadorOriginal.paisCodigo}.png`} alt={figurinha.selecao} className="absolute top-5 left-2 w-5 sm:w-6 h-auto shadow-sm border border-white/20 rounded-[2px] z-10" />
-                  
+
                   {/* Badge: Posição */}
                   <span className="absolute top-2 right-2 bg-black/50 backdrop-blur-md text-white text-[8px] sm:text-[9px] font-black px-1.5 py-0.5 rounded border border-white/10 shadow-lg z-10">
                     {(jogadorOriginal as any).posicao}
@@ -680,10 +674,9 @@ export default function Home() {
 
                   {/* Badge: Raridade */}
                   {!exibirTrocas && (
-                    <div className={`absolute bottom-2 right-2 text-center font-bold text-[8px] uppercase px-1.5 py-0.5 rounded-sm backdrop-blur-md shadow-lg z-20 ${
-                      figurinha.raridade === 'Épica' ? 'bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-600 text-amber-950 border border-yellow-200' : 
-                      figurinha.raridade === 'Rara' ? 'bg-gradient-to-r from-blue-300 to-blue-500 text-blue-950 border border-blue-200' : 'bg-white/80 dark:bg-black/50 text-zinc-600 dark:text-zinc-300'
-                    }`}>
+                    <div className={`absolute bottom-2 right-2 text-center font-bold text-[8px] uppercase px-1.5 py-0.5 rounded-sm backdrop-blur-md shadow-lg z-20 ${figurinha.raridade === 'Épica' ? 'bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-600 text-amber-950 border border-yellow-200' :
+                        figurinha.raridade === 'Rara' ? 'bg-gradient-to-r from-blue-300 to-blue-500 text-blue-950 border border-blue-200' : 'bg-white/80 dark:bg-black/50 text-zinc-600 dark:text-zinc-300'
+                      }`}>
                       {figurinha.raridade}
                     </div>
                   )}
@@ -701,9 +694,9 @@ export default function Home() {
                       {figurinha.nome}
                     </h4>
                     <span className="text-[9px] text-zinc-300 font-medium drop-shadow-sm mb-1">{(jogadorOriginal as any).idade} anos</span>
-                    
+
                     {exibirTrocas && (
-                      <button 
+                      <button
                         onClick={(e) => handleGerarLinkTroca(num, e)}
                         className="w-full text-center font-bold text-[8px] sm:text-[9px] uppercase py-1 mt-1 rounded bg-zinc-800/90 hover:bg-zinc-700 text-white transition-all active:scale-95 shadow border border-transparent hover:border-white/50 backdrop-blur"
                       >
@@ -718,29 +711,29 @@ export default function Home() {
             return (
               <div
                 key={num}
-                 className="aspect-[2/3] relative rounded-xl border-2 border-dashed border-zinc-400 dark:border-zinc-700 shadow-sm overflow-hidden opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-300 cursor-default"
+                className="aspect-[2/3] relative rounded-xl border-2 border-dashed border-zinc-400 dark:border-zinc-700 shadow-sm overflow-hidden opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-300 cursor-default"
               >
                 {/* Imagem borrada */}
-                <img 
-                  src={(jogadorOriginal as any).fotoUrl || getFallbackImage((jogadorOriginal as any).nome)} 
+                <img
+                  src={(jogadorOriginal as any).fotoUrl || getFallbackImage((jogadorOriginal as any).nome)}
                   onError={(e) => { e.currentTarget.src = getFallbackImage((jogadorOriginal as any).nome); e.currentTarget.onerror = null; }}
-                  alt="?" 
-                  className="absolute inset-0 object-cover w-full h-full filter blur-[6px] brightness-50 z-0 bg-zinc-200 dark:bg-zinc-800" 
+                  alt="?"
+                  className="absolute inset-0 object-cover w-full h-full filter blur-[6px] brightness-50 z-0 bg-zinc-200 dark:bg-zinc-800"
                 />
-                
+
                 {/* Degradê */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-0"></div>
 
                 <img src={`https://flagcdn.com/w40/${jogadorOriginal.paisCodigo}.png`} alt={jogadorOriginal.selecao} className="absolute top-5 left-2 w-5 sm:w-6 h-auto drop-shadow-md opacity-30 rounded-[2px] z-10" />
-                  
+
                 <span className="absolute top-2 right-2 bg-black/40 text-white/50 text-[8px] sm:text-[9px] font-black px-1.5 py-0.5 rounded shadow z-10">
                   {(jogadorOriginal as any).posicao}
                 </span>
-                
+
                 {/* Conteúdo Central/Inferior */}
                 <div className="absolute inset-x-0 bottom-0 p-3 flex flex-col items-center justify-end z-10">
                   <div className="w-5 h-5 rounded-full bg-zinc-300/40 dark:bg-zinc-700/40 flex items-center justify-center mb-1">
-                    <svg className="w-3 h-3 text-zinc-300" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    <svg className="w-3 h-3 text-zinc-300" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" /></svg>
                   </div>
                   <h4 className="text-[10px] sm:text-xs font-black text-zinc-300 dark:text-zinc-400 leading-tight truncate w-full text-center">
                     {jogadorOriginal.nome}
@@ -780,14 +773,14 @@ export default function Home() {
                   const borderClass = isEpica
                     ? "border-yellow-400 shadow-[0_0_20px_rgba(255,215,0,0.8)] bg-gradient-to-tr from-yellow-600 via-yellow-400 to-yellow-600"
                     : isRara
-                    ? "border-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.6)] bg-gradient-to-br from-blue-300 to-blue-500"
-                    : "border-zinc-300 bg-gradient-to-br from-zinc-50 to-zinc-200 dark:from-zinc-800 dark:to-zinc-900";
-                  
+                      ? "border-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.6)] bg-gradient-to-br from-blue-300 to-blue-500"
+                      : "border-zinc-300 bg-gradient-to-br from-zinc-50 to-zinc-200 dark:from-zinc-800 dark:to-zinc-900";
+
                   const textRarityClass = isEpica
                     ? "text-yellow-900 shadow-sm"
                     : isRara
-                    ? "text-blue-900 shadow-sm"
-                    : "text-zinc-600 dark:text-zinc-400";
+                      ? "text-blue-900 shadow-sm"
+                      : "text-zinc-600 dark:text-zinc-400";
 
                   return (
                     <div
@@ -796,17 +789,17 @@ export default function Home() {
                       onClick={() => toggleReveal(index)}
                     >
                       <div className={`relative w-48 h-64 sm:w-56 sm:h-80 shadow-2xl transition-transform duration-700 [transform-style:preserve-3d] ${isRevealed ? "" : "[transform:rotateY(180deg)]"}`}>
-                        
+
                         {/* Front (Carta Revelada) */}
                         <div className={`absolute inset-0 flex flex-col rounded-xl border-4 overflow-hidden transition-all w-full h-full [backface-visibility:hidden] ${borderClass}`}>
-                          
-                          <img 
-                            src={jogador.fotoUrl || getFallbackImage(jogador.nome)} 
+
+                          <img
+                            src={jogador.fotoUrl || getFallbackImage(jogador.nome)}
                             onError={(e) => { e.currentTarget.src = getFallbackImage(jogador.nome); e.currentTarget.onerror = null; }}
-                            alt={jogador.nome} 
-                            className="absolute inset-0 object-cover w-full h-full z-0 bg-zinc-200 dark:bg-zinc-800" 
+                            alt={jogador.nome}
+                            className="absolute inset-0 object-cover w-full h-full z-0 bg-zinc-200 dark:bg-zinc-800"
                           />
-                          
+
                           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-0"></div>
 
                           {isEpica && (
@@ -814,15 +807,14 @@ export default function Home() {
                           )}
 
                           <img src={`https://flagcdn.com/w40/${jogador.paisCodigo}.png`} alt={jogador.selecao} className="absolute top-4 left-3 w-7 sm:w-8 h-auto shadow-sm border border-white/20 rounded-[2px] z-10" />
-                          
+
                           <span className="absolute top-2 right-2 bg-black/60 backdrop-blur text-white text-xs font-black px-2 py-1 rounded border border-white/10 shadow-lg z-10">
                             {jogador.posicao}
                           </span>
 
-                          <div className={`absolute bottom-3 right-3 text-center font-bold text-[10px] sm:text-xs uppercase px-2 py-0.5 rounded-sm backdrop-blur-md shadow-2xl z-20 ${
-                            isEpica ? 'bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-600 text-amber-950 border border-yellow-200' : 
-                            isRara ? 'bg-gradient-to-r from-blue-300 to-blue-500 text-blue-950 border border-blue-200' : 'bg-white/80 dark:bg-black/50 text-zinc-600 dark:text-zinc-300'
-                          }`}>
+                          <div className={`absolute bottom-3 right-3 text-center font-bold text-[10px] sm:text-xs uppercase px-2 py-0.5 rounded-sm backdrop-blur-md shadow-2xl z-20 ${isEpica ? 'bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-600 text-amber-950 border border-yellow-200' :
+                              isRara ? 'bg-gradient-to-r from-blue-300 to-blue-500 text-blue-950 border border-blue-200' : 'bg-white/80 dark:bg-black/50 text-zinc-600 dark:text-zinc-300'
+                            }`}>
                             {jogador.raridade}
                           </div>
 
@@ -839,7 +831,7 @@ export default function Home() {
                         <div className="absolute inset-0 flex flex-col items-center justify-center rounded-xl border-4 border-green-400 dark:border-green-600 p-4 w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] bg-gradient-to-br from-green-700 to-green-900">
                           <svg className="w-16 h-16 text-yellow-400 mb-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                           <span className="text-sm font-black text-white/90 uppercase tracking-widest text-center shadow-black drop-shadow-md">
-                            Toque<br/>Para Virar
+                            Toque<br />Para Virar
                           </span>
                         </div>
 
@@ -877,7 +869,7 @@ export default function Home() {
             <p className="text-zinc-600 dark:text-zinc-400 mb-6 font-medium">
               Você recebeu um convite de troca de figurinha. Aceitar a transferência?
             </p>
-            
+
             <div className="flex flex-col gap-3">
               <button
                 onClick={aceitarTroca}
