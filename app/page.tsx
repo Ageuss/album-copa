@@ -29,6 +29,7 @@ export default function Home() {
   const [revealedCards, setRevealedCards] = useState<number[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [mobileCardIndex, setMobileCardIndex] = useState(0);
 
   const [albumOficial, setAlbumOficial] = useState<Jogador[]>([]);
   const selecoesDisponiveis = useMemo(() => {
@@ -377,6 +378,7 @@ export default function Home() {
         setJaAbriuHoje(true);
 
         setPacoteAberto(sorteados);
+        setMobileCardIndex(0);
         setIsModalOpen(true);
       }
     } catch (error) {
@@ -439,7 +441,7 @@ export default function Home() {
           </div>
 
           <h1 className="text-xl font-black italic tracking-tight text-white/90 drop-shadow-sm">
-            ÁLBUM DA COPA
+            ÁLBUM DE FIGURINHAS
           </h1>
 
           <button
@@ -459,8 +461,8 @@ export default function Home() {
           <div className="mb-8 p-5 sm:p-6 bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800 transition-all hover:shadow-md">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-3 gap-2">
               <h3 className={`font-black tracking-tight text-lg sm:text-xl ${new Set(minhasFigurinhas.map(f => f.jogador_id || f.id)).size === albumOficial.length
-                  ? "text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-yellow-700 dark:from-yellow-400 dark:to-yellow-600"
-                  : "text-zinc-800 dark:text-zinc-100"
+                ? "text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-yellow-700 dark:from-yellow-400 dark:to-yellow-600"
+                : "text-zinc-800 dark:text-zinc-100"
                 }`}>
                 {new Set(minhasFigurinhas.map(f => f.jogador_id || f.id)).size === albumOficial.length
                   ? "ÁLBUM COMPLETO! 🏆"
@@ -473,8 +475,8 @@ export default function Home() {
             <div className="w-full bg-zinc-100 dark:bg-zinc-800 rounded-full h-4 overflow-hidden border border-zinc-200 dark:border-zinc-700">
               <div
                 className={`h-full rounded-full transition-all duration-1000 ease-out ${new Set(minhasFigurinhas.map(f => f.jogador_id || f.id)).size === albumOficial.length
-                    ? "bg-gradient-to-r from-yellow-300 via-yellow-500 to-yellow-600 shadow-[0_0_15px_rgba(234,179,8,0.6)]"
-                    : "bg-gradient-to-r from-yellow-400 to-green-500"
+                  ? "bg-gradient-to-r from-yellow-300 via-yellow-500 to-yellow-600 shadow-[0_0_15px_rgba(234,179,8,0.6)]"
+                  : "bg-gradient-to-r from-yellow-400 to-green-500"
                   }`}
                 style={{ width: `${Math.min(((new Set(minhasFigurinhas.map(f => f.jogador_id || f.id)).size / albumOficial.length) * 100), 100)}%` }}
               />
@@ -484,7 +486,7 @@ export default function Home() {
         <div className="mb-6 md:mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
             <h2 className="text-2xl md:text-3xl font-black text-gray-800 dark:text-gray-100 tracking-tight">
-              O Álbum Oficial
+              Complete as seleções e troque figurinhas com seus amigos
             </h2>
           </div>
 
@@ -492,8 +494,8 @@ export default function Home() {
             onClick={abrirPacoteDiario}
             disabled={jaAbriuHoje || isShaking}
             className={`flex-shrink-0 font-black px-6 py-3 rounded-xl shadow-lg transform transition-all flex items-center justify-center gap-2 ${jaAbriuHoje
-                ? "bg-zinc-300 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-600 cursor-not-allowed"
-                : "bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-yellow-950 hover:scale-[1.02] active:scale-95"
+              ? "bg-zinc-300 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-600 cursor-not-allowed"
+              : "bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-yellow-950 hover:scale-[1.02] active:scale-95"
               } ${isShaking ? "animate-shake" : ""}`}
           >
             <svg className={`w-6 h-6 ${isShaking ? "animate-spin" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" /></svg>
@@ -548,25 +550,31 @@ export default function Home() {
               <div className="absolute z-50 mt-2 w-full md:w-80 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-2xl overflow-hidden">
                 {/* Campo de Busca */}
                 <div className="p-2 border-b border-zinc-100 dark:border-zinc-800">
-                  <input
-                    type="text"
-                    autoFocus
-                    placeholder="Buscar seleção..."
-                    value={searchTerm}
-                    onChange={e => setSearchTerm(e.target.value)}
-                    className="w-full bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-100 placeholder-zinc-400 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-yellow-400/50"
-                  />
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <svg className="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="Buscar seleção..."
+                      value={searchTerm}
+                      onChange={e => setSearchTerm(e.target.value)}
+                      className="w-full bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-100 placeholder-zinc-400 rounded-lg pl-9 pr-3 py-2 text-sm outline-none focus:ring-2 focus:ring-yellow-400/50"
+                    />
+                  </div>
                 </div>
 
                 {/* Lista rolável */}
-                <div className="max-h-64 overflow-y-auto">
+                <div className="max-h-64 overflow-y-auto scroll-smooth overscroll-contain">
                   {/* Item fixo: Minhas Trocas */}
                   {("minhas trocas".includes(searchTerm.toLowerCase()) || searchTerm === "") && (
                     <button
                       onClick={() => { setSelecaoAtiva("Minhas Trocas"); setIsDropdownOpen(false); setSearchTerm(""); }}
                       className={`w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors ${selecaoAtiva === "Minhas Trocas"
-                          ? "bg-zinc-800 text-white dark:bg-zinc-100 dark:text-zinc-900"
-                          : "hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300"
+                        ? "bg-zinc-800 text-white dark:bg-zinc-100 dark:text-zinc-900"
+                        : "hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300"
                         }`}
                     >
                       <span className="font-bold">🔄 Minhas Trocas</span>
@@ -594,8 +602,8 @@ export default function Home() {
                           key={selecao}
                           onClick={() => { setSelecaoAtiva(selecao); setIsDropdownOpen(false); setSearchTerm(""); }}
                           className={`w-full flex items-center justify-between px-4 py-2.5 text-sm gap-3 transition-colors ${isAtivo
-                              ? "bg-zinc-800 text-white dark:bg-zinc-100 dark:text-zinc-900"
-                              : "hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300"
+                            ? "bg-zinc-800 text-white dark:bg-zinc-100 dark:text-zinc-900"
+                            : "hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300"
                             }`}
                         >
                           <div className="flex items-center gap-2 min-w-0">
@@ -675,7 +683,7 @@ export default function Home() {
                   {/* Badge: Raridade */}
                   {!exibirTrocas && (
                     <div className={`absolute bottom-2 right-2 text-center font-bold text-[8px] uppercase px-1.5 py-0.5 rounded-sm backdrop-blur-md shadow-lg z-20 ${figurinha.raridade === 'Épica' ? 'bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-600 text-amber-950 border border-yellow-200' :
-                        figurinha.raridade === 'Rara' ? 'bg-gradient-to-r from-blue-300 to-blue-500 text-blue-950 border border-blue-200' : 'bg-white/80 dark:bg-black/50 text-zinc-600 dark:text-zinc-300'
+                      figurinha.raridade === 'Rara' ? 'bg-gradient-to-r from-blue-300 to-blue-500 text-blue-950 border border-blue-200' : 'bg-white/80 dark:bg-black/50 text-zinc-600 dark:text-zinc-300'
                       }`}>
                       {figurinha.raridade}
                     </div>
@@ -754,18 +762,36 @@ export default function Home() {
 
         {/* Modal Pacote */}
         {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-opacity">
-            <div className="bg-white dark:bg-zinc-900 rounded-2xl w-full max-w-3xl p-6 md:p-8 shadow-2xl relative transform transition-all scale-100 animate-in zoom-in-95 duration-200">
-              <div className="text-center mb-8">
-                <h3 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-yellow-700 uppercase tracking-widest">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity">
+            <div className="bg-white dark:bg-zinc-900 rounded-2xl w-full max-w-3xl mx-4 p-5 sm:p-6 md:p-8 shadow-2xl relative transform transition-all scale-100 animate-in zoom-in-95 duration-200 max-h-[95dvh] flex flex-col overflow-hidden">
+              <div className="text-center mb-4 sm:mb-8 flex-shrink-0">
+                <h3 className="text-2xl sm:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-yellow-700 uppercase tracking-widest">
                   Pacote Aberto!
                 </h3>
-                <p className="text-zinc-500 dark:text-zinc-400 mt-2">
+                <p className="text-zinc-500 dark:text-zinc-400 mt-1 sm:mt-2 text-sm sm:text-base">
                   Você tirou 3 novas figurinhas.
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-8">
+              {/* Contador Mobile */}
+              <div className="flex sm:hidden items-center justify-center gap-2 mb-3 flex-shrink-0">
+                {pacoteAberto.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setMobileCardIndex(i)}
+                    className={`w-2.5 h-2.5 rounded-full transition-all ${i === mobileCardIndex
+                        ? "bg-yellow-500 scale-125"
+                        : revealedCards.includes(i)
+                          ? "bg-green-500/60"
+                          : "bg-zinc-300 dark:bg-zinc-600"
+                      }`}
+                  />
+                ))}
+                <span className="text-xs font-bold text-zinc-400 ml-2">Carta {mobileCardIndex + 1} de {pacoteAberto.length}</span>
+              </div>
+
+              {/* Desktop: todas as cartas lado a lado */}
+              <div className="hidden sm:flex items-center justify-center gap-6 mb-8 flex-shrink-0">
                 {pacoteAberto.map((jogador, index) => {
                   const isRevealed = revealedCards.includes(index);
                   const isEpica = jogador.raridade === "Épica";
@@ -776,72 +802,98 @@ export default function Home() {
                       ? "border-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.6)] bg-gradient-to-br from-blue-300 to-blue-500"
                       : "border-zinc-300 bg-gradient-to-br from-zinc-50 to-zinc-200 dark:from-zinc-800 dark:to-zinc-900";
 
-                  const textRarityClass = isEpica
-                    ? "text-yellow-900 shadow-sm"
-                    : isRara
-                      ? "text-blue-900 shadow-sm"
-                      : "text-zinc-600 dark:text-zinc-400";
-
                   return (
-                    <div
-                      key={index}
-                      className="group [perspective:1000px] cursor-pointer"
-                      onClick={() => toggleReveal(index)}
-                    >
-                      <div className={`relative w-48 h-64 sm:w-56 sm:h-80 shadow-2xl transition-transform duration-700 [transform-style:preserve-3d] ${isRevealed ? "" : "[transform:rotateY(180deg)]"}`}>
-
-                        {/* Front (Carta Revelada) */}
+                    <div key={index} className="group [perspective:1000px] cursor-pointer" onClick={() => toggleReveal(index)}>
+                      <div className={`relative w-56 h-80 shadow-2xl transition-transform duration-700 [transform-style:preserve-3d] ${isRevealed ? "" : "[transform:rotateY(180deg)]"}`}>
+                        {/* Front */}
                         <div className={`absolute inset-0 flex flex-col rounded-xl border-4 overflow-hidden transition-all w-full h-full [backface-visibility:hidden] ${borderClass}`}>
-
-                          <img
-                            src={jogador.fotoUrl || getFallbackImage(jogador.nome)}
-                            onError={(e) => { e.currentTarget.src = getFallbackImage(jogador.nome); e.currentTarget.onerror = null; }}
-                            alt={jogador.nome}
-                            className="absolute inset-0 object-cover w-full h-full z-0 bg-zinc-200 dark:bg-zinc-800"
-                          />
-
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-0"></div>
-
-                          {isEpica && (
-                            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-yellow-500/50 via-transparent to-transparent z-0 animate-pulse pointer-events-none"></div>
-                          )}
-
-                          <img src={`https://flagcdn.com/w40/${jogador.paisCodigo}.png`} alt={jogador.selecao} className="absolute top-4 left-3 w-7 sm:w-8 h-auto shadow-sm border border-white/20 rounded-[2px] z-10" />
-
-                          <span className="absolute top-2 right-2 bg-black/60 backdrop-blur text-white text-xs font-black px-2 py-1 rounded border border-white/10 shadow-lg z-10">
-                            {jogador.posicao}
-                          </span>
-
-                          <div className={`absolute bottom-3 right-3 text-center font-bold text-[10px] sm:text-xs uppercase px-2 py-0.5 rounded-sm backdrop-blur-md shadow-2xl z-20 ${isEpica ? 'bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-600 text-amber-950 border border-yellow-200' :
-                              isRara ? 'bg-gradient-to-r from-blue-300 to-blue-500 text-blue-950 border border-blue-200' : 'bg-white/80 dark:bg-black/50 text-zinc-600 dark:text-zinc-300'
-                            }`}>
-                            {jogador.raridade}
-                          </div>
-
+                          <img src={jogador.fotoUrl || getFallbackImage(jogador.nome)} onError={(e) => { e.currentTarget.src = getFallbackImage(jogador.nome); e.currentTarget.onerror = null; }} alt={jogador.nome} className="absolute inset-0 object-cover w-full h-full z-0 bg-zinc-200 dark:bg-zinc-800" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-0" />
+                          {isEpica && <div className="absolute inset-x-0 bottom-0 h-1/2 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-yellow-500/50 via-transparent to-transparent z-0 animate-pulse pointer-events-none" />}
+                          <img src={`https://flagcdn.com/w40/${jogador.paisCodigo}.png`} alt={jogador.selecao} className="absolute top-4 left-3 w-8 h-auto shadow-sm border border-white/20 rounded-[2px] z-10" />
+                          <span className="absolute top-2 right-2 bg-black/60 backdrop-blur text-white text-xs font-black px-2 py-1 rounded border border-white/10 shadow-lg z-10">{jogador.posicao}</span>
+                          <div className={`absolute bottom-3 right-3 text-center font-bold text-xs uppercase px-2 py-0.5 rounded-sm backdrop-blur-md shadow-2xl z-20 ${isEpica ? 'bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-600 text-amber-950 border border-yellow-200' : isRara ? 'bg-gradient-to-r from-blue-300 to-blue-500 text-blue-950 border border-blue-200' : 'bg-white/80 dark:bg-black/50 text-zinc-600 dark:text-zinc-300'}`}>{jogador.raridade}</div>
                           <div className="absolute inset-x-0 bottom-0 p-4 flex flex-col items-start z-10">
-                            <h4 className="text-sm sm:text-lg font-black text-white drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] leading-tight truncate w-full">
-                              {jogador.nome}
-                            </h4>
+                            <h4 className="text-lg font-black text-white drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] leading-tight truncate w-full">{jogador.nome}</h4>
                             <span className="text-xs text-zinc-300 font-medium drop-shadow-md">{jogador.idade} anos</span>
                           </div>
-
                         </div>
-
-                        {/* Back (Verso Escondido) */}
+                        {/* Back */}
                         <div className="absolute inset-0 flex flex-col items-center justify-center rounded-xl border-4 border-green-400 dark:border-green-600 p-4 w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] bg-gradient-to-br from-green-700 to-green-900">
-                          <svg className="w-16 h-16 text-yellow-400 mb-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                          <span className="text-sm font-black text-white/90 uppercase tracking-widest text-center shadow-black drop-shadow-md">
-                            Toque<br />Para Virar
-                          </span>
+                          <svg className="w-16 h-16 text-yellow-400 mb-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                          <span className="text-sm font-black text-white/90 uppercase tracking-widest text-center drop-shadow-md">Toque<br />Para Virar</span>
                         </div>
-
                       </div>
                     </div>
                   );
                 })}
               </div>
 
-              <div className={`flex justify-center transition-opacity duration-500 ${revealedCards.length === 3 ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
+              {/* Mobile: carrossel de uma carta por vez */}
+              <div className="flex sm:hidden flex-col items-center flex-1 min-h-0">
+                <div className="relative flex items-center justify-center w-full flex-1 min-h-0">
+                  {/* Seta Esquerda */}
+                  {mobileCardIndex > 0 && (
+                    <button
+                      onClick={() => setMobileCardIndex(prev => prev - 1)}
+                      className="absolute left-0 z-30 w-8 h-8 rounded-full bg-white/20 dark:bg-black/30 backdrop-blur flex items-center justify-center text-white active:scale-90 transition-transform"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" /></svg>
+                    </button>
+                  )}
+
+                  {/* Carta ativa */}
+                  {pacoteAberto.map((jogador, index) => {
+                    if (index !== mobileCardIndex) return null;
+                    const isRevealed = revealedCards.includes(index);
+                    const isEpica = jogador.raridade === "Épica";
+                    const isRara = jogador.raridade === "Rara";
+                    const borderClass = isEpica
+                      ? "border-yellow-400 shadow-[0_0_20px_rgba(255,215,0,0.8)] bg-gradient-to-tr from-yellow-600 via-yellow-400 to-yellow-600"
+                      : isRara
+                        ? "border-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.6)] bg-gradient-to-br from-blue-300 to-blue-500"
+                        : "border-zinc-300 bg-gradient-to-br from-zinc-50 to-zinc-200 dark:from-zinc-800 dark:to-zinc-900";
+
+                    return (
+                      <div key={index} className="[perspective:1000px] cursor-pointer" onClick={() => toggleReveal(index)}>
+                        <div className={`relative w-52 h-72 shadow-2xl transition-transform duration-700 [transform-style:preserve-3d] ${isRevealed ? "" : "[transform:rotateY(180deg)]"}`}>
+                          {/* Front */}
+                          <div className={`absolute inset-0 flex flex-col rounded-xl border-4 overflow-hidden transition-all w-full h-full [backface-visibility:hidden] ${borderClass}`}>
+                            <img src={jogador.fotoUrl || getFallbackImage(jogador.nome)} onError={(e) => { e.currentTarget.src = getFallbackImage(jogador.nome); e.currentTarget.onerror = null; }} alt={jogador.nome} className="absolute inset-0 object-cover w-full h-full z-0 bg-zinc-200 dark:bg-zinc-800" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-0" />
+                            {isEpica && <div className="absolute inset-x-0 bottom-0 h-1/2 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-yellow-500/50 via-transparent to-transparent z-0 animate-pulse pointer-events-none" />}
+                            <img src={`https://flagcdn.com/w40/${jogador.paisCodigo}.png`} alt={jogador.selecao} className="absolute top-4 left-3 w-7 h-auto shadow-sm border border-white/20 rounded-[2px] z-10" />
+                            <span className="absolute top-2 right-2 bg-black/60 backdrop-blur text-white text-[10px] font-black px-2 py-1 rounded border border-white/10 shadow-lg z-10">{jogador.posicao}</span>
+                            <div className={`absolute bottom-3 right-3 text-center font-bold text-[10px] uppercase px-2 py-0.5 rounded-sm backdrop-blur-md shadow-2xl z-20 ${isEpica ? 'bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-600 text-amber-950 border border-yellow-200' : isRara ? 'bg-gradient-to-r from-blue-300 to-blue-500 text-blue-950 border border-blue-200' : 'bg-white/80 dark:bg-black/50 text-zinc-600 dark:text-zinc-300'}`}>{jogador.raridade}</div>
+                            <div className="absolute inset-x-0 bottom-0 p-3 flex flex-col items-start z-10">
+                              <h4 className="text-sm font-black text-white drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] leading-tight truncate w-full">{jogador.nome}</h4>
+                              <span className="text-[10px] text-zinc-300 font-medium drop-shadow-md">{jogador.idade} anos</span>
+                            </div>
+                          </div>
+                          {/* Back */}
+                          <div className="absolute inset-0 flex flex-col items-center justify-center rounded-xl border-4 border-green-400 dark:border-green-600 p-4 w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] bg-gradient-to-br from-green-700 to-green-900">
+                            <svg className="w-14 h-14 text-yellow-400 mb-3 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            <span className="text-sm font-black text-white/90 uppercase tracking-widest text-center drop-shadow-md">Toque<br />Para Virar</span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+
+                  {/* Seta Direita */}
+                  {mobileCardIndex < pacoteAberto.length - 1 && (
+                    <button
+                      onClick={() => setMobileCardIndex(prev => prev + 1)}
+                      className="absolute right-0 z-30 w-8 h-8 rounded-full bg-white/20 dark:bg-black/30 backdrop-blur flex items-center justify-center text-white active:scale-90 transition-transform"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" /></svg>
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Botão fixo no rodapé do modal — sempre acessível */}
+              <div className={`flex justify-center pt-4 sm:pt-0 flex-shrink-0 transition-opacity duration-500 ${revealedCards.length === 3 ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
                 <button
                   onClick={() => setIsModalOpen(false)}
                   className="bg-zinc-800 dark:bg-zinc-100 text-white dark:text-zinc-900 font-bold px-8 py-3 rounded-full hover:bg-zinc-700 dark:hover:bg-zinc-200 transition-colors"
