@@ -31,6 +31,15 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
   const [mobileCardIndex, setMobileCardIndex] = useState(0);
 
+  // Estados do Modal de Criação de Oferta de Mercado
+  const [modalOfertaAberto, setModalOfertaAberto] = useState(false);
+  const [ofertaJogadorId, setOfertaJogadorId] = useState<string | null>(null);
+  const [ofertaDesejadoId, setOfertaDesejadoId] = useState<string>("");
+  const [isPublicandoOferta, setIsPublicandoOferta] = useState(false);
+  const [ofertaSearchTerm, setOfertaSearchTerm] = useState("");
+  const [confirmacaoMercadoAberta, setConfirmacaoMercadoAberta] = useState(false);
+  const [ofertaJogadorPendente, setOfertaJogadorPendente] = useState<string | null>(null);
+
   const [albumOficial, setAlbumOficial] = useState<Jogador[]>([]);
   const selecoesDisponiveis = useMemo(() => {
     return Array.from(new Set(albumOficial.map(j => j.selecao))).sort((a, b) => a.localeCompare(b));
@@ -297,6 +306,28 @@ export default function Home() {
     }
   };
 
+  const publicarOferta = async () => {
+    if (!user || !ofertaJogadorId || !ofertaDesejadoId) return;
+    setIsPublicandoOferta(true);
+    try {
+      const { error } = await supabase.from("ofertas_troca").insert({
+        id_ofertante: user.id,
+        jogador_oferecido_id: ofertaJogadorId,
+        jogador_desejado_id: ofertaDesejadoId,
+        status: "aberta",
+      });
+      if (error) throw error;
+      setToastMessage("✅ Oferta publicada no Mercado!");
+      setModalOfertaAberto(false);
+    } catch (err) {
+      console.error("Erro ao publicar oferta:", err);
+      setToastMessage("❌ Erro ao publicar oferta.");
+    } finally {
+      setIsPublicandoOferta(false);
+      setTimeout(() => setToastMessage(null), 3000);
+    }
+  };
+
   const abrirPacoteDiario = async () => {
     if (!user) return;
 
@@ -444,12 +475,21 @@ export default function Home() {
             ÁLBUM DE FIGURINHAS
           </h1>
 
-          <button
-            onClick={handleLogout}
-            className="text-sm font-semibold bg-green-800 hover:bg-green-900 px-5 py-2.5 rounded-xl transition-all shadow-sm active:scale-95"
-          >
-            Sair
-          </button>
+          <div className="flex items-center gap-2">
+            <a
+              href="/mercado"
+              className="text-sm font-semibold bg-yellow-400 hover:bg-yellow-300 text-green-900 px-3 py-2 rounded-xl transition-all shadow-sm active:scale-95 hidden sm:inline-flex items-center gap-1.5"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-4H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+              Mercado
+            </a>
+            <button
+              onClick={handleLogout}
+              className="text-sm font-semibold bg-green-800 hover:bg-green-900 px-5 py-2.5 rounded-xl transition-all shadow-sm active:scale-95"
+            >
+              Sair
+            </button>
+          </div>
         </div>
       </header>
 
@@ -704,12 +744,24 @@ export default function Home() {
                     <span className="text-[9px] text-zinc-300 font-medium drop-shadow-sm mb-1">{(jogadorOriginal as any).idade} anos</span>
 
                     {exibirTrocas && (
-                      <button
-                        onClick={(e) => handleGerarLinkTroca(num, e)}
-                        className="w-full text-center font-bold text-[8px] sm:text-[9px] uppercase py-1 mt-1 rounded bg-zinc-800/90 hover:bg-zinc-700 text-white transition-all active:scale-95 shadow border border-transparent hover:border-white/50 backdrop-blur"
-                      >
-                        🔗 Trocar
-                      </button>
+                      <div className="w-full flex flex-col gap-1 mt-1">
+                        <button
+                          onClick={(e) => handleGerarLinkTroca(num, e)}
+                          className="w-full text-center font-bold text-[8px] sm:text-[9px] uppercase py-1 rounded bg-zinc-800/90 hover:bg-zinc-700 text-white transition-all active:scale-95 shadow border border-transparent hover:border-white/50 backdrop-blur"
+                        >
+                          🔗 Trocar
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setOfertaJogadorPendente(String(num));
+                            setConfirmacaoMercadoAberta(true);
+                          }}
+                          className="w-full text-center font-bold text-[8px] sm:text-[9px] uppercase py-1 rounded bg-green-700/90 hover:bg-green-600 text-white transition-all active:scale-95 shadow border border-transparent hover:border-white/50 backdrop-blur"
+                        >
+                          🏾 Mercado
+                        </button>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -946,6 +998,125 @@ export default function Home() {
                 className="w-full bg-transparent border-2 border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 font-bold py-3 px-4 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all active:scale-95 disabled:opacity-50"
               >
                 Recusar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Confirmação de Aviso do Mercado */}
+      {confirmacaoMercadoAberta && ofertaJogadorPendente && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl w-full max-w-sm p-6 shadow-2xl text-center animate-in zoom-in-95 duration-200">
+            {/* Ícone de aviso */}
+            <div className="w-14 h-14 rounded-full bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center mx-auto mb-4">
+              <svg className="w-7 h-7 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+              </svg>
+            </div>
+
+            <h3 className="text-lg font-black text-zinc-800 dark:text-zinc-100 mb-2">Atenção antes de continuar!</h3>
+            <p className="text-zinc-500 dark:text-zinc-400 text-sm mb-1">
+              Você está prestes a anunciar a figurinha{" "}
+              <span className="font-black text-zinc-800 dark:text-zinc-200">
+                {albumOficial.find(j => String(j.id) === ofertaJogadorPendente)?.nome || "—"}
+              </span>{" "}
+              no Mercado de Trocas.
+            </p>
+            <p className="text-amber-600 dark:text-amber-400 text-sm font-bold mb-6">
+              ⚠️ Uma vez publicada, a oferta não pode ser cancelada ou retirada. Ela só se encerrará quando outro jogador aceitar a troca.
+            </p>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => { setConfirmacaoMercadoAberta(false); setOfertaJogadorPendente(null); }}
+                className="flex-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-bold py-3 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => {
+                  setOfertaJogadorId(ofertaJogadorPendente);
+                  setOfertaDesejadoId("");
+                  setOfertaSearchTerm("");
+                  setConfirmacaoMercadoAberta(false);
+                  setOfertaJogadorPendente(null);
+                  setModalOfertaAberto(true);
+                }}
+                className="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold py-3 rounded-xl transition-all active:scale-95"
+              >
+                Entendi, Continuar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Criar Oferta no Mercado */}
+      {modalOfertaAberto && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl w-full max-w-md p-6 shadow-2xl">
+            <h3 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-emerald-600 mb-1">Anunciar no Mercado</h3>
+            <p className="text-zinc-500 dark:text-zinc-400 text-sm mb-5">Escolha qual figurinha você quer receber em troca.</p>
+
+            <div className="mb-4 p-3 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center gap-3">
+              <span className="text-xs font-bold uppercase text-zinc-400">Você oferece</span>
+              <span className="font-black text-zinc-800 dark:text-zinc-100 text-sm">
+                {albumOficial.find(j => String(j.id) === ofertaJogadorId)?.nome || "—"}
+              </span>
+            </div>
+
+            <div className="mb-2 relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+              </div>
+              <input
+                type="text"
+                placeholder="Buscar figurinha desejada..."
+                value={ofertaSearchTerm}
+                onChange={e => setOfertaSearchTerm(e.target.value)}
+                className="w-full bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-100 placeholder-zinc-400 rounded-xl pl-9 pr-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-green-400/50"
+              />
+            </div>
+
+            <div className="max-h-52 overflow-y-auto rounded-xl border border-zinc-200 dark:border-zinc-700 mb-5 scroll-smooth overscroll-contain">
+              {albumOficial
+                .filter(j => String(j.id) !== ofertaJogadorId && j.nome.toLowerCase().includes(ofertaSearchTerm.toLowerCase()))
+                .map(j => (
+                  <button
+                    key={String(j.id)}
+                    onClick={() => setOfertaDesejadoId(String(j.id))}
+                    className={`w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors ${
+                      ofertaDesejadoId === String(j.id)
+                        ? "bg-green-600 text-white"
+                        : "hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <img src={`https://flagcdn.com/w20/${j.paisCodigo}.png`} alt="" className="w-4 h-auto rounded-sm flex-shrink-0" />
+                      <span className="font-semibold truncate">{j.nome}</span>
+                      <span className="text-[10px] opacity-60 flex-shrink-0">{j.selecao}</span>
+                    </div>
+                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md flex-shrink-0 ml-2 ${
+                      ofertaDesejadoId === String(j.id) ? "bg-white/20" : "bg-zinc-100 dark:bg-zinc-700 text-zinc-500"
+                    }`}>{j.raridade}</span>
+                  </button>
+                ))}
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setModalOfertaAberto(false)}
+                className="flex-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-bold py-3 px-4 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={publicarOferta}
+                disabled={!ofertaDesejadoId || isPublicandoOferta}
+                className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-3 px-4 rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {isPublicandoOferta ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> : "Publicar Oferta"}
               </button>
             </div>
           </div>
