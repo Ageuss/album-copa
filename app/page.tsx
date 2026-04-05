@@ -807,16 +807,20 @@ export default function Home() {
                       <div className={`relative w-56 h-80 shadow-2xl transition-transform duration-700 [transform-style:preserve-3d] ${isRevealed ? "" : "[transform:rotateY(180deg)]"}`}>
                         {/* Front */}
                         <div className={`absolute inset-0 flex flex-col rounded-xl border-4 overflow-hidden transition-all w-full h-full [backface-visibility:hidden] ${borderClass}`}>
-                          <img src={jogador.fotoUrl || getFallbackImage(jogador.nome)} onError={(e) => { e.currentTarget.src = getFallbackImage(jogador.nome); e.currentTarget.onerror = null; }} alt={jogador.nome} className="absolute inset-0 object-cover w-full h-full z-0 bg-zinc-200 dark:bg-zinc-800" />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-0" />
-                          {isEpica && <div className="absolute inset-x-0 bottom-0 h-1/2 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-yellow-500/50 via-transparent to-transparent z-0 animate-pulse pointer-events-none" />}
-                          <img src={`https://flagcdn.com/w40/${jogador.paisCodigo}.png`} alt={jogador.selecao} className="absolute top-4 left-3 w-8 h-auto shadow-sm border border-white/20 rounded-[2px] z-10" />
-                          <span className="absolute top-2 right-2 bg-black/60 backdrop-blur text-white text-xs font-black px-2 py-1 rounded border border-white/10 shadow-lg z-10">{jogador.posicao}</span>
-                          <div className={`absolute bottom-3 right-3 text-center font-bold text-xs uppercase px-2 py-0.5 rounded-sm backdrop-blur-md shadow-2xl z-20 ${isEpica ? 'bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-600 text-amber-950 border border-yellow-200' : isRara ? 'bg-gradient-to-r from-blue-300 to-blue-500 text-blue-950 border border-blue-200' : 'bg-white/80 dark:bg-black/50 text-zinc-600 dark:text-zinc-300'}`}>{jogador.raridade}</div>
-                          <div className="absolute inset-x-0 bottom-0 p-4 flex flex-col items-start z-10">
-                            <h4 className="text-lg font-black text-white drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] leading-tight truncate w-full">{jogador.nome}</h4>
-                            <span className="text-xs text-zinc-300 font-medium drop-shadow-md">{jogador.idade} anos</span>
-                          </div>
+                          {isRevealed && (
+                            <>
+                              <img src={jogador.fotoUrl || getFallbackImage(jogador.nome)} onError={(e) => { e.currentTarget.src = getFallbackImage(jogador.nome); e.currentTarget.onerror = null; }} alt={jogador.nome} className="absolute inset-0 object-cover w-full h-full z-0 bg-zinc-200 dark:bg-zinc-800" />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-0" />
+                              {isEpica && <div className="absolute inset-x-0 bottom-0 h-1/2 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-yellow-500/50 via-transparent to-transparent z-0 animate-pulse pointer-events-none" />}
+                              <img src={`https://flagcdn.com/w40/${jogador.paisCodigo}.png`} alt={jogador.selecao} className="absolute top-4 left-3 w-8 h-auto shadow-sm border border-white/20 rounded-[2px] z-10" />
+                              <span className="absolute top-2 right-2 bg-black/60 backdrop-blur text-white text-xs font-black px-2 py-1 rounded border border-white/10 shadow-lg z-10">{jogador.posicao}</span>
+                              <div className={`absolute bottom-3 right-3 text-center font-bold text-xs uppercase px-2 py-0.5 rounded-sm backdrop-blur-md shadow-2xl z-20 ${isEpica ? 'bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-600 text-amber-950 border border-yellow-200' : isRara ? 'bg-gradient-to-r from-blue-300 to-blue-500 text-blue-950 border border-blue-200' : 'bg-white/80 dark:bg-black/50 text-zinc-600 dark:text-zinc-300'}`}>{jogador.raridade}</div>
+                              <div className="absolute inset-x-0 bottom-0 p-4 flex flex-col items-start z-10">
+                                <h4 className="text-lg font-black text-white drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] leading-tight truncate w-full">{jogador.nome}</h4>
+                                <span className="text-xs text-zinc-300 font-medium drop-shadow-md">{jogador.idade} anos</span>
+                              </div>
+                            </>
+                          )}
                         </div>
                         {/* Back */}
                         <div className="absolute inset-0 flex flex-col items-center justify-center rounded-xl border-4 border-green-400 dark:border-green-600 p-4 w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] bg-gradient-to-br from-green-700 to-green-900">
@@ -859,16 +863,20 @@ export default function Home() {
                         <div className={`relative w-52 h-72 shadow-2xl transition-transform duration-700 [transform-style:preserve-3d] ${isRevealed ? "" : "[transform:rotateY(180deg)]"}`}>
                           {/* Front */}
                           <div className={`absolute inset-0 flex flex-col rounded-xl border-4 overflow-hidden transition-all w-full h-full [backface-visibility:hidden] ${borderClass}`}>
-                            <img src={jogador.fotoUrl || getFallbackImage(jogador.nome)} onError={(e) => { e.currentTarget.src = getFallbackImage(jogador.nome); e.currentTarget.onerror = null; }} alt={jogador.nome} className="absolute inset-0 object-cover w-full h-full z-0 bg-zinc-200 dark:bg-zinc-800" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-0" />
-                            {isEpica && <div className="absolute inset-x-0 bottom-0 h-1/2 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-yellow-500/50 via-transparent to-transparent z-0 animate-pulse pointer-events-none" />}
-                            <img src={`https://flagcdn.com/w40/${jogador.paisCodigo}.png`} alt={jogador.selecao} className="absolute top-4 left-3 w-7 h-auto shadow-sm border border-white/20 rounded-[2px] z-10" />
-                            <span className="absolute top-2 right-2 bg-black/60 backdrop-blur text-white text-[10px] font-black px-2 py-1 rounded border border-white/10 shadow-lg z-10">{jogador.posicao}</span>
-                            <div className={`absolute bottom-3 right-3 text-center font-bold text-[10px] uppercase px-2 py-0.5 rounded-sm backdrop-blur-md shadow-2xl z-20 ${isEpica ? 'bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-600 text-amber-950 border border-yellow-200' : isRara ? 'bg-gradient-to-r from-blue-300 to-blue-500 text-blue-950 border border-blue-200' : 'bg-white/80 dark:bg-black/50 text-zinc-600 dark:text-zinc-300'}`}>{jogador.raridade}</div>
-                            <div className="absolute inset-x-0 bottom-0 p-3 flex flex-col items-start z-10">
-                              <h4 className="text-sm font-black text-white drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] leading-tight truncate w-full">{jogador.nome}</h4>
-                              <span className="text-[10px] text-zinc-300 font-medium drop-shadow-md">{jogador.idade} anos</span>
-                            </div>
+                            {isRevealed && (
+                              <>
+                                <img src={jogador.fotoUrl || getFallbackImage(jogador.nome)} onError={(e) => { e.currentTarget.src = getFallbackImage(jogador.nome); e.currentTarget.onerror = null; }} alt={jogador.nome} className="absolute inset-0 object-cover w-full h-full z-0 bg-zinc-200 dark:bg-zinc-800" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-0" />
+                                {isEpica && <div className="absolute inset-x-0 bottom-0 h-1/2 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-yellow-500/50 via-transparent to-transparent z-0 animate-pulse pointer-events-none" />}
+                                <img src={`https://flagcdn.com/w40/${jogador.paisCodigo}.png`} alt={jogador.selecao} className="absolute top-4 left-3 w-7 h-auto shadow-sm border border-white/20 rounded-[2px] z-10" />
+                                <span className="absolute top-2 right-2 bg-black/60 backdrop-blur text-white text-[10px] font-black px-2 py-1 rounded border border-white/10 shadow-lg z-10">{jogador.posicao}</span>
+                                <div className={`absolute bottom-3 right-3 text-center font-bold text-[10px] uppercase px-2 py-0.5 rounded-sm backdrop-blur-md shadow-2xl z-20 ${isEpica ? 'bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-600 text-amber-950 border border-yellow-200' : isRara ? 'bg-gradient-to-r from-blue-300 to-blue-500 text-blue-950 border border-blue-200' : 'bg-white/80 dark:bg-black/50 text-zinc-600 dark:text-zinc-300'}`}>{jogador.raridade}</div>
+                                <div className="absolute inset-x-0 bottom-0 p-3 flex flex-col items-start z-10">
+                                  <h4 className="text-sm font-black text-white drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] leading-tight truncate w-full">{jogador.nome}</h4>
+                                  <span className="text-[10px] text-zinc-300 font-medium drop-shadow-md">{jogador.idade} anos</span>
+                                </div>
+                              </>
+                            )}
                           </div>
                           {/* Back */}
                           <div className="absolute inset-0 flex flex-col items-center justify-center rounded-xl border-4 border-green-400 dark:border-green-600 p-4 w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] bg-gradient-to-br from-green-700 to-green-900">
