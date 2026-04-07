@@ -471,21 +471,21 @@ export default function Home() {
             </span>
           </div>
 
-          <h1 className="text-xl font-black italic tracking-tight text-white/90 drop-shadow-sm">
+          <h1 className="text-base sm:text-xl font-black italic tracking-tight text-white/90 drop-shadow-sm">
             ÁLBUM DE FIGURINHAS
           </h1>
 
           <div className="flex items-center gap-2">
             <a
               href="/mercado"
-              className="text-sm font-semibold bg-yellow-400 hover:bg-yellow-300 text-green-900 px-3 py-2 rounded-xl transition-all shadow-sm active:scale-95 hidden sm:inline-flex items-center gap-1.5"
+              className="text-sm font-semibold bg-yellow-400 hover:bg-yellow-300 text-green-900 px-3 py-2 rounded-xl transition-all shadow-sm active:scale-95 flex items-center gap-1.5"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-4H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-              Mercado
+              <span className="hidden sm:inline">Mercado</span>
             </a>
             <button
               onClick={handleLogout}
-              className="text-sm font-semibold bg-green-800 hover:bg-green-900 px-5 py-2.5 rounded-xl transition-all shadow-sm active:scale-95"
+              className="text-sm font-semibold bg-green-800 hover:bg-green-900 px-3 sm:px-5 py-2.5 rounded-xl transition-all shadow-sm active:scale-95"
             >
               Sair
             </button>
